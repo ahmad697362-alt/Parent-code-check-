@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.ParentApp">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".DashboardActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".LocationViewActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".AppBlockActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".PhotosActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".PhotoViewerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".RecordingsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".KeylogsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".AlertsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".AlertWordsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".DeviceInfoActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ScreenTimeActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ContactsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ContactBlockActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".SmsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".CallLogsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".NightModeActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".DataViewerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".RemoteControlActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".AdminControlActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".AllCommandsActivity" android:screenOrientation="portrait"/>
+
+    </application>
+</manifest>

