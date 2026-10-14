@@ -34,7 +34,7 @@ public class DashboardActivity extends Activity {
     }
 
     private void setupButtons() {
-        // All Commands (180)
+        // All Commands (54 Real Working Commands)
         findViewById(R.id.btnAllCommands).setOnClickListener(v -> {
             Intent i = new Intent(this, AllCommandsActivity.class);
             i.putExtra("device_code", deviceCode);
@@ -58,12 +58,13 @@ public class DashboardActivity extends Activity {
             startActivity(i);
         });
 
-        // 3. Screen Time
+        // 3. Screen Time — FIXED: fallback support
         findViewById(R.id.btnScreenTime).setOnClickListener(v -> {
             sendCmd("get_screen_time", "");
             Intent i = new Intent(this, DataViewerActivity.class);
             i.putExtra("device_code", deviceCode);
             i.putExtra("path", "screentime.json");
+            i.putExtra("fallback_path", "screen_time.json");
             i.putExtra("title", "Screen Time");
             startActivity(i);
         });
@@ -91,10 +92,8 @@ public class DashboardActivity extends Activity {
 
         // 7. Alerts & Notifications
         findViewById(R.id.btnAlerts).setOnClickListener(v -> {
-            Intent i = new Intent(this, DataViewerActivity.class);
+            Intent i = new Intent(this, AlertsActivity.class);
             i.putExtra("device_code", deviceCode);
-            i.putExtra("path", "alerts.json");
-            i.putExtra("title", "Alerts");
             startActivity(i);
         });
 
@@ -158,12 +157,13 @@ public class DashboardActivity extends Activity {
             startActivity(i);
         });
 
-        // 14. App Usage
+        // 14. App Usage — FIXED: fallback support
         findViewById(R.id.btnAppUsage).setOnClickListener(v -> {
             sendCmd("get_screen_time", "");
             Intent i = new Intent(this, DataViewerActivity.class);
             i.putExtra("device_code", deviceCode);
             i.putExtra("path", "screentime.json");
+            i.putExtra("fallback_path", "screen_time.json");
             i.putExtra("title", "App Usage");
             startActivity(i);
         });

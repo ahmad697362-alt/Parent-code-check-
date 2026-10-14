@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -21,6 +22,8 @@ public class AppBlockActivity extends Activity {
     LinearLayout layout;
     Set<String> blocked = new HashSet<>();
     Handler handler = new Handler();
+    private int retryCount = 0;
+    private static final int MAX_RETRIES = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +36,21 @@ public class AppBlockActivity extends Activity {
         layout.setPadding(30, 30, 30, 30);
         scroll.addView(layout);
         setContentView(scroll);
-
         setTitle("App Blocking");
 
+        addLoadingText("Loading blocked apps...");
         loadBlocked();
-        loadApps();
+    }
+
+    private void addLoadingText(String msg) {
+        runOnUiThread(() -> {
+            layout.removeAllViews();
+            TextView tv = new TextView(this);
+            tv.setText(msg);
+            tv.setTextColor(0xFF888888);
+            tv.setTextSize(14);
+            layout.addView(tv);
+        });
     }
 
     private void loadBlocked() {
@@ -51,25 +64,47 @@ public class AppBlockActivity extends Activity {
                     }
                 } catch (Exception e) {}
             }
+            runOnUiThread(() -> loadApps());
         }).start();
     }
 
     private void loadApps() {
-        // Ask child to upload app list
         FirebaseHelper.sendCommand(deviceCode, "get_installed_apps", "");
+        addLoadingText("Requesting app list from child device...\nPlease wait...");
 
-        handler.postDelayed(() -> {
-            new Thread(() -> {
-                String json = FirebaseHelper.get(
-                        "devices/" + deviceCode + "/installed_apps.json");
-                if (json != null && !json.equals("null")) {
-                    try {
-                        JSONArray arr = new JSONArray(json);
-                        runOnUiThread(() -> showApps(arr));
-                    } catch (Exception e) {}
-                }
-            }).start();
-        }, 4000);
+        retryCount = 0;
+        handler.postDelayed(this::tryLoadApps, 3000);
+    }
+
+    private void tryLoadApps() {
+        new Thread(() -> {
+            String json = FirebaseHelper.get(
+                    "devices/" + deviceCode + "/installed_apps.json");
+
+            if (json != null && !json.equals("null")) {
+                try {
+                    JSONArray arr = new JSONArray(json);
+                    runOnUiThread(() -> showApps(arr));
+                    return;
+                } catch (Exception e) {}
+            }
+
+            retryCount++;
+            if (retryCount < MAX_RETRIES) {
+                runOnUiThread(() -> addLoadingText(
+                        "Waiting for child device... (attempt " + (retryCount + 1) + "/" + MAX_RETRIES + ")"));
+                handler.postDelayed(this::tryLoadApps, 3000);
+            } else {
+                runOnUiThread(() -> {
+                    layout.removeAllViews();
+                    TextView tv = new TextView(this);
+                    tv.setText("Failed to load app list.\nMake sure child device is online.\nTry again later.");
+                    tv.setTextColor(0xFFFF4444);
+                    tv.setTextSize(14);
+                    layout.addView(tv);
+                });
+            }
+        }).start();
     }
 
     private void showApps(JSONArray apps) {
@@ -111,6 +146,11 @@ public class AppBlockActivity extends Activity {
 
                 layout.addView(cb);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            TextView tv = new TextView(this);
+            tv.setText("Error loading apps: " + e.getMessage());
+            tv.setTextColor(0xFFFF4444);
+            layout.addView(tv);
+        }
     }
 }

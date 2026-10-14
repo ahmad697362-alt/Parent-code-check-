@@ -1,14 +1,7 @@
 package com.kidsguard.parent;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Base64;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -20,165 +13,110 @@ import java.util.Iterator;
 
 public class DataViewerActivity extends Activity {
 
-    String deviceCode, path, title;
+    String deviceCode;
+    String path;
+    String fallbackPath;
+    String title;
     LinearLayout layout;
-    ScrollView scroll;
-    Handler handler = new Handler();
-    boolean active = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         deviceCode = getIntent().getStringExtra("device_code");
         path = getIntent().getStringExtra("path");
+        fallbackPath = getIntent().getStringExtra("fallback_path");
         title = getIntent().getStringExtra("title");
 
-        scroll = new ScrollView(this);
+        ScrollView scroll = new ScrollView(this);
         layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(32, 32, 32, 32);
+        layout.setPadding(40, 40, 40, 40);
         scroll.addView(layout);
         setContentView(scroll);
+        setTitle(title != null ? title : "Data");
 
-        setTitle(title != null ? title : "Data Viewer");
+        addLoadingText();
         loadData();
     }
 
+    private void addLoadingText() {
+        TextView tv = new TextView(this);
+        tv.setText("Loading data...");
+        tv.setTextColor(0xFF888888);
+        tv.setTextSize(14);
+        layout.addView(tv);
+    }
+
     private void loadData() {
-        layout.removeAllViews();
-
-        // Add refresh button at top
-        Button btnRefresh = new Button(this);
-        btnRefresh.setText("🔄 Refresh / Check Result");
-        btnRefresh.setOnClickListener(v -> loadData());
-        layout.addView(btnRefresh);
-
-        TextView loading = new TextView(this);
-        loading.setText("\nWaiting for device response...");
-        loading.setTextSize(15);
-        loading.setTextColor(0xFF00FF88);
-        layout.addView(loading);
-
         new Thread(() -> {
-            try {
-                final String json = FirebaseHelper.get("devices/" + deviceCode + "/" + path);
-                runOnUiThread(() -> {
-                    if (!active) return;
-                    // Remove loading view if present
-                    if (layout.getChildCount() > 1) {
-                        layout.removeViewAt(1);
-                    }
+            String json = FirebaseHelper.get("devices/" + deviceCode + "/" + path);
 
-                    if (json == null || json.equals("null") || json.isEmpty()) {
-                        TextView tv = new TextView(this);
-                        tv.setText("\n[No data or result yet]\n\nNote: Make sure the child device is online and connected. Tap 'Refresh' once the command is executed.");
-                        tv.setTextColor(0xFFFFAA00);
-                        tv.setTextSize(14);
-                        layout.addView(tv);
-                        return;
-                    }
-                    displayJson(json);
-                });
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    if (!active) return;
-                    TextView tv = new TextView(this);
-                    tv.setText("\nError fetching data:\n" + e.getMessage());
-                    tv.setTextSize(14);
-                    tv.setTextColor(0xFFFF5555);
-                    layout.addView(tv);
-                });
+            if ((json == null || json.equals("null") || json.isEmpty())
+                    && fallbackPath != null && !fallbackPath.isEmpty()) {
+                json = FirebaseHelper.get("devices/" + deviceCode + "/" + fallbackPath);
             }
+
+            final String finalJson = json;
+            runOnUiThread(() -> {
+                layout.removeAllViews();
+                if (finalJson != null && !finalJson.equals("null") && !finalJson.isEmpty()) {
+                    displayData(finalJson);
+                } else {
+                    addNoDataText();
+                }
+            });
         }).start();
     }
 
-    private void displayJson(String json) {
+    private void displayData(String json) {
         try {
             if (json.startsWith("{")) {
                 JSONObject obj = new JSONObject(json);
-                displayObject(obj);
+                displayJsonObject(obj, 0);
             } else if (json.startsWith("[")) {
                 JSONArray arr = new JSONArray(json);
-                displayArray(arr);
+                displayJsonArray(arr);
             } else {
                 TextView tv = new TextView(this);
-                tv.setText("\nResult:\n" + json);
-                tv.setTextColor(0xFFFFFFFF);
+                tv.setText(json);
                 tv.setTextSize(14);
-                tv.setPadding(0, 8, 0, 8);
+                tv.setTextColor(0xFFFFFFFF);
                 layout.addView(tv);
             }
         } catch (Exception e) {
             TextView tv = new TextView(this);
-            tv.setText("\nRaw Result:\n" + json);
-            tv.setTextColor(0xFFFFFFFF);
-            tv.setTextSize(14);
+            tv.setText(json);
+            tv.setTextSize(13);
+            tv.setTextColor(0xFFCCCCCC);
             layout.addView(tv);
         }
     }
 
-    private void displayObject(JSONObject obj) {
-        Iterator<String> keys = obj.keys();
-        while (keys.hasNext()) {
-            String key = keys.next();
-            try {
-                Object val = obj.get(key);
-                if (val instanceof JSONObject) {
-                    TextView tv = new TextView(this);
-                    tv.setText(key + ":");
-                    tv.setTextColor(0xFF00FF88);
-                    tv.setTextSize(14);
-                    tv.setPadding(0, 12, 0, 4);
-                    layout.addView(tv);
-                    displayObject((JSONObject) val);
-                } else if (val instanceof JSONArray) {
-                    TextView tv = new TextView(this);
-                    tv.setText(key + ":");
-                    tv.setTextColor(0xFF00FF88);
-                    tv.setTextSize(14);
-                    tv.setPadding(0, 12, 0, 4);
-                    layout.addView(tv);
-                    displayArray((JSONArray) val);
-                } else {
-                    String str = val.toString();
-                    if (str.length() > 500 && !str.contains(" ") && !str.contains("{")) {
-                        try {
-                            byte[] decoded = Base64.decode(str, Base64.NO_WRAP);
-                            Bitmap bmp = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
-                            if (bmp != null) {
-                                ImageView iv = new ImageView(this);
-                                iv.setImageBitmap(bmp);
-                                iv.setAdjustViewBounds(true);
-                                iv.setPadding(0, 8, 0, 8);
-                                layout.addView(iv);
-                                continue;
-                            }
-                        } catch (Exception ignored) {}
-                    }
-                    TextView tv = new TextView(this);
-                    tv.setText(key + ": " + str);
-                    tv.setTextColor(0xFFFFFFFF);
-                    tv.setTextSize(13);
-                    tv.setPadding(0, 4, 0, 4);
-                    layout.addView(tv);
-                }
-            } catch (Exception e) {}
-        }
-    }
-
-    private void displayArray(JSONArray arr) {
+    private void displayJsonObject(JSONObject obj, int indent) {
         try {
-            for (int i = 0; i < arr.length(); i++) {
-                Object val = arr.get(i);
-                if (val instanceof JSONObject) {
-                    displayObject((JSONObject) val);
-                    addDivider();
-                } else if (val instanceof JSONArray) {
-                    displayArray((JSONArray) val);
+            Iterator<String> keys = obj.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                Object value = obj.get(key);
+
+                TextView tv = new TextView(this);
+                String padding = "";
+                for (int i = 0; i < indent; i++) padding += "  ";
+
+                if (value instanceof JSONObject) {
+                    tv.setText(padding + "📁 " + key + ":");
+                    tv.setTextColor(0xFF44AAFF);
+                    tv.setTextSize(14);
+                    layout.addView(tv);
+                    displayJsonObject((JSONObject) value, indent + 1);
+                } else if (value instanceof JSONArray) {
+                    tv.setText(padding + "📋 " + key + " [" + ((JSONArray) value).length() + " items]:");
+                    tv.setTextColor(0xFF44AAFF);
+                    tv.setTextSize(14);
+                    layout.addView(tv);
+                    displayJsonArray((JSONArray) value);
                 } else {
-                    TextView tv = new TextView(this);
-                    tv.setText("• " + val.toString());
+                    tv.setText(padding + key + ": " + value.toString());
                     tv.setTextColor(0xFFFFFFFF);
                     tv.setTextSize(13);
                     tv.setPadding(0, 4, 0, 4);
@@ -188,15 +126,32 @@ public class DataViewerActivity extends Activity {
         } catch (Exception e) {}
     }
 
-    private void addDivider() {
-        View v = new View(this);
-        v.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 2));
-        v.setBackgroundColor(0xFF333333);
-        v.setPadding(0, 8, 0, 8);
-        layout.addView(v);
+    private void displayJsonArray(JSONArray arr) {
+        try {
+            for (int i = 0; i < arr.length(); i++) {
+                Object item = arr.get(i);
+                if (item instanceof JSONObject) {
+                    TextView separator = new TextView(this);
+                    separator.setText("─────────────────");
+                    separator.setTextColor(0xFF444444);
+                    layout.addView(separator);
+                    displayJsonObject((JSONObject) item, 1);
+                } else {
+                    TextView tv = new TextView(this);
+                    tv.setText("  • " + item.toString());
+                    tv.setTextColor(0xFFFFFFFF);
+                    tv.setTextSize(13);
+                    layout.addView(tv);
+                }
+            }
+        } catch (Exception e) {}
     }
 
-    @Override protected void onResume() { super.onResume(); active = true; }
-    @Override protected void onPause() { super.onPause(); active = false; }
+    private void addNoDataText() {
+        TextView tv = new TextView(this);
+        tv.setText("No data found.\nThe command may still be processing.\nGo back and try again in a few seconds.");
+        tv.setTextColor(0xFF888888);
+        tv.setTextSize(14);
+        layout.addView(tv);
+    }
 }

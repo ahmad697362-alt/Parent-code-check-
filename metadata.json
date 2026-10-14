@@ -1,6 +1,6 @@
 {
-  "name": "Remix Code Guard",
-  "description": "Preserve your source code integrity with strict version control and automated change protection.",
+  "name": "KidsGuard Parent",
+  "description": "Parental control and monitoring companion app.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
